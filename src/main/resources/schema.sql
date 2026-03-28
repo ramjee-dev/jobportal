@@ -13,6 +13,6 @@ CREATE TABLE IF NOT EXISTS companies (
     website VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     created_by VARCHAR(20) NOT NULL,
-    updates_at TIMESTAMP DEFAULT NULL,
+    updated_at TIMESTAMP DEFAULT NULL,
     updated_by VARCHAR(20) DEFAULT NULL
 );
