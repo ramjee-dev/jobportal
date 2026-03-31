@@ -3,6 +3,7 @@ package com.ramjee.jobportaldemo.auth;
 import com.ramjee.jobportaldemo.dto.LoginRequestDto;
 import com.ramjee.jobportaldemo.dto.LoginResponseDto;
 import com.ramjee.jobportaldemo.dto.UserDto;
+import com.ramjee.jobportaldemo.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
 
     @PostMapping(value = "/login/public",version = "1.0")
@@ -30,7 +32,7 @@ public class AuthController {
             var resultAuthentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.username(),
                     loginRequestDto.password()));
             // Generate JWT token
-            String jwtToken = null;
+            String jwtToken = jwtUtil.generateJwtToken(resultAuthentication);
             var userDto = new UserDto();
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new LoginResponseDto(HttpStatus.OK.getReasonPhrase(),
