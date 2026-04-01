@@ -17,12 +17,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.password.CompromisedPasswordChecker;
+import org.springframework.security.authentication.password.CompromisedPasswordDecision;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,6 +40,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final JobPortalUserRepository jobPortalUserRepository;
+    private final CompromisedPasswordChecker compromisedPasswordChecker;
 
 
     @PostMapping(value = "/login/public",version = "1.0")
@@ -70,6 +77,28 @@ public class AuthController {
 
     @PostMapping(value = "/register/public",version = "1.0")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDto registerRequestDto) {
+
+        CompromisedPasswordDecision decision = compromisedPasswordChecker
+                .check(registerRequestDto.password());
+        if (decision.isCompromised()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("password", "Choose a strong password"));
+        }
+
+        Optional<JobPortalUser> existingUser = jobPortalUserRepository.readUserByEmailOrMobileNumber
+                (registerRequestDto.email(), registerRequestDto.mobileNumber());
+        if (existingUser.isPresent()) {
+            Map<String, String> errors = new HashMap<>();
+            JobPortalUser jobPortalUser = existingUser.get();
+            if (jobPortalUser.getEmail().equalsIgnoreCase(registerRequestDto.email())) {
+                errors.put("email", "Email is already registered");
+            }
+            if (jobPortalUser.getMobileNumber().equals(registerRequestDto.mobileNumber())) {
+                errors.put("mobileNumber", "Mobile number is already registered");
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
 
         JobPortalUser jobPortalUser = new JobPortalUser();
         BeanUtils.copyProperties(registerRequestDto, jobPortalUser);
