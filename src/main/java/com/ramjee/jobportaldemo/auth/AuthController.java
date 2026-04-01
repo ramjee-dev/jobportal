@@ -1,16 +1,24 @@
 package com.ramjee.jobportaldemo.auth;
 
+import com.ramjee.jobportaldemo.constants.ApplicationConstants;
 import com.ramjee.jobportaldemo.dto.LoginRequestDto;
 import com.ramjee.jobportaldemo.dto.LoginResponseDto;
+import com.ramjee.jobportaldemo.dto.RegisterRequestDto;
 import com.ramjee.jobportaldemo.dto.UserDto;
+import com.ramjee.jobportaldemo.entity.JobPortalUser;
+import com.ramjee.jobportaldemo.entity.Role;
+import com.ramjee.jobportaldemo.repository.JobPortalUserRepository;
+import com.ramjee.jobportaldemo.repository.RoleRepository;
 import com.ramjee.jobportaldemo.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +31,9 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final JobPortalUserRepository jobPortalUserRepository;
 
 
     @PostMapping(value = "/login/public",version = "1.0")
@@ -56,5 +67,19 @@ public class AuthController {
             .status(status)
             .body(new LoginResponseDto(message, null, null));
 }
+
+    @PostMapping(value = "/register/public",version = "1.0")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDto registerRequestDto) {
+
+        JobPortalUser jobPortalUser = new JobPortalUser();
+        BeanUtils.copyProperties(registerRequestDto, jobPortalUser);
+        jobPortalUser.setPasswordHash(passwordEncoder.encode(registerRequestDto.password()));
+        Role role = roleRepository.findRoleByName(ApplicationConstants.ROLE_JOB_SEEKER)
+                .orElseThrow(() -> new IllegalArgumentException("Role not found: " +
+                        ApplicationConstants.ROLE_JOB_SEEKER));
+        jobPortalUser.setRole(role);
+        jobPortalUserRepository.save(jobPortalUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+    }
 
 }
