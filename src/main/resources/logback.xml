@@ -54,7 +54,7 @@
     <!-- ===================== -->
     <!-- Application-specific ERROR logs -->
     <!-- ===================== -->
-    <logger name="com.eazybytes.jobportaldemo"
+    <logger name="com.ramjee.jobportaldemo"
             level="INFO"
             additivity="false">
         <appender-ref ref="RollingFile"/>
