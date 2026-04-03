@@ -2,14 +2,14 @@ package com.ramjee.jobportaldemo.contact.controller;
 
 import com.ramjee.jobportaldemo.contact.service.IContactService;
 import com.ramjee.jobportaldemo.dto.ContactRequestDto;
+import com.ramjee.jobportaldemo.dto.ContactResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/contacts")
@@ -28,5 +28,11 @@ public class ContactController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Request processing failed");
         }
+    }
+
+    @GetMapping("/admin")
+    public ResponseEntity<List<ContactResponseDto>> fetchNewContactMsgs() {
+        List<ContactResponseDto> contactResponseDtos = contactService.fetchNewContactMsgs();
+        return ResponseEntity.status(HttpStatus.OK).body(contactResponseDtos);
     }
 }
