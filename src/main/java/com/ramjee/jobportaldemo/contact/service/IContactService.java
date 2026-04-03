@@ -11,4 +11,6 @@ public interface IContactService {
 
     List<ContactResponseDto> fetchNewContactMsgs();
 
+    List<ContactResponseDto> fetchNewContactMsgsWithSort(String sortBy, String sortDir);
+
 }
