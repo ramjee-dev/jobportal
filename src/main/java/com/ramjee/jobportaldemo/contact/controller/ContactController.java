@@ -1,5 +1,6 @@
 package com.ramjee.jobportaldemo.contact.controller;
 
+import com.ramjee.jobportaldemo.constants.ApplicationConstants;
 import com.ramjee.jobportaldemo.contact.service.IContactService;
 import com.ramjee.jobportaldemo.dto.ContactRequestDto;
 import com.ramjee.jobportaldemo.dto.ContactResponseDto;
@@ -55,6 +56,17 @@ public class ContactController {
         Page<ContactResponseDto> contactResponseDtoPage = contactService
                 .fetchNewContactMsgsWithPaginationAndSort(pageNumber, pageSize, sortBy, sortDir);
         return ResponseEntity.status(HttpStatus.OK).body(contactResponseDtoPage);
+    }
+
+    @PatchMapping("/{id}/status/admin")
+    public ResponseEntity<String> closeContactMsg(@PathVariable String id)  {
+        boolean isUpdated = contactService.closeContactMsg(Long.valueOf(id),
+                ApplicationConstants.CLOSED_MESSAGE);
+        if (isUpdated) {
+            return ResponseEntity.status(HttpStatus.OK).body("Contact message updated successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update contact message.");
+        }
     }
 
 

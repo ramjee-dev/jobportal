@@ -6,6 +6,7 @@ import com.ramjee.jobportaldemo.dto.ContactRequestDto;
 import com.ramjee.jobportaldemo.dto.ContactResponseDto;
 import com.ramjee.jobportaldemo.entity.Contact;
 import com.ramjee.jobportaldemo.repository.ContactRepository;
+import com.ramjee.jobportaldemo.util.ApplicationUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -20,11 +22,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ContactServiceImpl implements IContactService {
 
     private final ContactRepository contactRepository;
 
     @Override
+    @Transactional
     public boolean saveContact(ContactRequestDto contactRequestDto) {
         boolean result = false;
         Contact contact = contactRepository.save(transformToEntity(contactRequestDto));
@@ -74,6 +78,13 @@ public class ContactServiceImpl implements IContactService {
         // Transform Contact entities to ContactResponseDto
         Page<ContactResponseDto> responseDtoPage = contactPage.map(this::transformToDto);
         return responseDtoPage;
+    }
+
+    @Transactional
+    @Override
+    public boolean closeContactMsg(Long id, String status) {
+        int updatedRows = contactRepository.updateStatusById(status, id, ApplicationUtility.getLoggedInUser());
+        return updatedRows > 0;
     }
 
 

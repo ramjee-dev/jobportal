@@ -17,4 +17,6 @@ public interface IContactService {
     Page<ContactResponseDto> fetchNewContactMsgsWithPaginationAndSort(int pageNumber, int pageSize,
                                                                       String sortBy, String sortDir);
 
+    boolean closeContactMsg(Long id, String status);
+
 }
