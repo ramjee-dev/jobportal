@@ -41,6 +41,12 @@ public class CompanyServiceImpl implements ICompanyService {
         return company;
     }
 
+    @Override
+    public List<CompanyDto> getAllCompaniesForAdmin() {
+        List<Company> companyList =companyRepository.findAll();
+        return companyList.stream().map(this::transformCompanyToDtoForAdmin).collect(Collectors.toList());
+    }
+
     private CompanyDto transformCompanyToDto(Company company){
         List<JobDto> jobDtos = company.getJobList().stream().map(this::transformJobToDto).collect(Collectors.toList());
         return new CompanyDto(company.getId(), company.getName(), company.getLogo(),
@@ -76,5 +82,12 @@ public class CompanyServiceImpl implements ICompanyService {
                 job.getRemote(),
                 job.getStatus()
         );
+    }
+
+    private CompanyDto transformCompanyToDtoForAdmin(Company company) {
+        return new CompanyDto(company.getId(), company.getName(), company.getLogo(),
+                company.getIndustry(), company.getSize(), company.getRating(),
+                company.getLocations(), company.getFounded(), company.getDescription(),
+                company.getEmployees(), company.getWebsite(), company.getCreatedAt(),null);
     }
 }
