@@ -59,6 +59,12 @@ public class CompanyServiceImpl implements ICompanyService {
         return updatedRecords > 0;
     }
 
+    @Transactional
+    @Override
+    public void deleteCompanyById(Long id) {
+        companyRepository.deleteById(id);
+    }
+
     private CompanyDto transformCompanyToDto(Company company){
         List<JobDto> jobDtos = company.getJobList().stream().map(this::transformJobToDto).collect(Collectors.toList());
         return new CompanyDto(company.getId(), company.getName(), company.getLogo(),

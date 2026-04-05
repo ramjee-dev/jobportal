@@ -52,4 +52,11 @@ public class CompanyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update Company details");
         }
     }
+
+    @DeleteMapping(path = "/{id}/admin", version = "1.0")
+    public ResponseEntity<String> deleteCompanyById(@PathVariable @NotBlank String id) {
+        companyService.deleteCompanyById(Long.valueOf(id));
+        return ResponseEntity.status(HttpStatus.OK).body("Company record deleted successfully.");
+    }
+
 }
