@@ -7,6 +7,7 @@ import com.ramjee.jobportaldemo.entity.Company;
 import com.ramjee.jobportaldemo.entity.Job;
 import com.ramjee.jobportaldemo.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,44 @@ public class CompanyServiceImpl implements ICompanyService {
     public List<CompanyDto> getAllCompanies() {
         List<Company> companyList = companyRepository.findAll();
          return companyList.stream().map(this::transformCompanyToDto).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public boolean createCompany(CompanyDto companyDto) {
+        Company company = transformCompanyDtoToEntity(companyDto);
+        Company savedCompany = companyRepository.save(company);
+        return savedCompany.getId() != null && savedCompany.getId() > 0;
+    }
+
+    private Company transformCompanyDtoToEntity(CompanyDto companyDto) {
+        Company company = new Company();
+        BeanUtils.copyProperties(companyDto, company);
+        return company;
+    }
+
+    @Override
+    public List<CompanyDto> getAllCompaniesForAdmin() {
+        List<Company> companyList =companyRepository.findAll();
+        return companyList.stream().map(this::transformCompanyToDtoForAdmin).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public boolean updateCompanyDetails(Long id, CompanyDto companyDto) {
+        int updatedRecords = companyRepository.updateCompanyDetails(
+                id,companyDto.name(),companyDto.logo(),
+                companyDto.industry(),companyDto.size(),companyDto.rating(),
+                companyDto.locations(),companyDto.founded(),companyDto.description(),
+                companyDto.employees(),companyDto.website()
+        );
+        return updatedRecords > 0;
+    }
+
+    @Transactional
+    @Override
+    public void deleteCompanyById(Long id) {
+        companyRepository.deleteById(id);
     }
 
     private CompanyDto transformCompanyToDto(Company company){
@@ -61,5 +100,12 @@ public class CompanyServiceImpl implements ICompanyService {
                 job.getRemote(),
                 job.getStatus()
         );
+    }
+
+    private CompanyDto transformCompanyToDtoForAdmin(Company company) {
+        return new CompanyDto(company.getId(), company.getName(), company.getLogo(),
+                company.getIndustry(), company.getSize(), company.getRating(),
+                company.getLocations(), company.getFounded(), company.getDescription(),
+                company.getEmployees(), company.getWebsite(), company.getCreatedAt(),null);
     }
 }
