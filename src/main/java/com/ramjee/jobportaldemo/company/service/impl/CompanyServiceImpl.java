@@ -7,6 +7,7 @@ import com.ramjee.jobportaldemo.entity.Company;
 import com.ramjee.jobportaldemo.entity.Job;
 import com.ramjee.jobportaldemo.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,20 @@ public class CompanyServiceImpl implements ICompanyService {
     public List<CompanyDto> getAllCompanies() {
         List<Company> companyList = companyRepository.findAll();
          return companyList.stream().map(this::transformCompanyToDto).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public boolean createCompany(CompanyDto companyDto) {
+        Company company = transformCompanyDtoToEntity(companyDto);
+        Company savedCompany = companyRepository.save(company);
+        return savedCompany.getId() != null && savedCompany.getId() > 0;
+    }
+
+    private Company transformCompanyDtoToEntity(CompanyDto companyDto) {
+        Company company = new Company();
+        BeanUtils.copyProperties(companyDto, company);
+        return company;
     }
 
     private CompanyDto transformCompanyToDto(Company company){

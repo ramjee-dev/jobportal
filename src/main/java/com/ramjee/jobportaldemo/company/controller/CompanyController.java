@@ -2,11 +2,11 @@ package com.ramjee.jobportaldemo.company.controller;
 
 import com.ramjee.jobportaldemo.company.service.ICompanyService;
 import com.ramjee.jobportaldemo.dto.CompanyDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,4 +22,18 @@ public class CompanyController {
         List<CompanyDto> companyList = companyService.getAllCompanies();
         return ResponseEntity.ok(companyList);
     }
+
+    @PostMapping(path = "/admin", version = "1.0")
+    public ResponseEntity<String> createCompany(@RequestBody @Valid CompanyDto companyDto) {
+        boolean isCreated = companyService.createCompany(companyDto);
+        if (isCreated) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Request processed successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Request processing failed");
+        }
+    }
+
+
 }
