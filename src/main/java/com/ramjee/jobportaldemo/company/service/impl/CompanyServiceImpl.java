@@ -47,6 +47,18 @@ public class CompanyServiceImpl implements ICompanyService {
         return companyList.stream().map(this::transformCompanyToDtoForAdmin).collect(Collectors.toList());
     }
 
+    @Transactional
+    @Override
+    public boolean updateCompanyDetails(Long id, CompanyDto companyDto) {
+        int updatedRecords = companyRepository.updateCompanyDetails(
+                id,companyDto.name(),companyDto.logo(),
+                companyDto.industry(),companyDto.size(),companyDto.rating(),
+                companyDto.locations(),companyDto.founded(),companyDto.description(),
+                companyDto.employees(),companyDto.website()
+        );
+        return updatedRecords > 0;
+    }
+
     private CompanyDto transformCompanyToDto(Company company){
         List<JobDto> jobDtos = company.getJobList().stream().map(this::transformJobToDto).collect(Collectors.toList());
         return new CompanyDto(company.getId(), company.getName(), company.getLogo(),

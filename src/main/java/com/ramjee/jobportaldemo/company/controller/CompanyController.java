@@ -3,6 +3,7 @@ package com.ramjee.jobportaldemo.company.controller;
 import com.ramjee.jobportaldemo.company.service.ICompanyService;
 import com.ramjee.jobportaldemo.dto.CompanyDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,5 +40,16 @@ public class CompanyController {
     public ResponseEntity<List<CompanyDto>> getAllCompaniesForAdmin() {
         List<CompanyDto> companyList = companyService.getAllCompaniesForAdmin();
         return ResponseEntity.ok().body(companyList);
+    }
+
+    @PutMapping(path = "/{id}/admin", version = "1.0")
+    public ResponseEntity<String> updateCompanyDetails(@PathVariable @NotBlank String id,
+                                                       @RequestBody @Valid CompanyDto companyDto) {
+        boolean isUpdated = companyService.updateCompanyDetails(Long.valueOf(id),companyDto);
+        if (isUpdated) {
+            return ResponseEntity.status(HttpStatus.OK).body("Company details updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update Company details");
+        }
     }
 }
