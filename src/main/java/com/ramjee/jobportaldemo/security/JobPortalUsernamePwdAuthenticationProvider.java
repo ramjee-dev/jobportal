@@ -27,7 +27,7 @@ public class JobPortalUsernamePwdAuthenticationProvider implements Authenticatio
     public @Nullable Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String pwd = authentication.getCredentials().toString();
-        JobPortalUser jobPortalUser = jobPortalUserRepository.findUserByEmail(username)
+        JobPortalUser jobPortalUser = jobPortalUserRepository.findJobPortalUserByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "User details not found for the user: " + username)
                 );
