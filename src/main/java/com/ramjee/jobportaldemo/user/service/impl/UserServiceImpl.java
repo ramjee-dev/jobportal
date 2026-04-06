@@ -1,7 +1,9 @@
 package com.ramjee.jobportaldemo.user.service.impl;
 
+import com.ramjee.jobportaldemo.constants.ApplicationConstants;
 import com.ramjee.jobportaldemo.dto.UserDto;
 import com.ramjee.jobportaldemo.entity.JobPortalUser;
+import com.ramjee.jobportaldemo.entity.Role;
 import com.ramjee.jobportaldemo.repository.CompanyRepository;
 import com.ramjee.jobportaldemo.repository.JobPortalUserRepository;
 import com.ramjee.jobportaldemo.repository.RoleRepository;
@@ -26,6 +28,35 @@ public class UserServiceImpl implements IUserService {
     public Optional<UserDto> searchUserByEmail(String email) {
         return userRepository.findJobPortalUserByEmail(email)
                 .map(this::mapToUserDto);
+    }
+
+    @Transactional
+    @Override
+    public UserDto elevateToEmployer(Long userId) {
+        JobPortalUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+
+        // Check if user is already an employer
+        if (ApplicationConstants.ROLE_EMPLOYER.equals(user.getRole().getName())) {
+            return mapToUserDto(user);
+        }
+        // Check if user is already an admin
+        if (ApplicationConstants.ROLE_ADMIN.equals(user.getRole().getName())) {
+            throw new RuntimeException("Cannot elevate admin user to employer role");
+        }
+
+        // Find ROLE_EMPLOYER
+        Role employerRole = roleRepository.findRoleByName(ApplicationConstants.ROLE_EMPLOYER)
+                .orElseThrow(() -> new RuntimeException("ROLE_EMPLOYER not found"));
+        user.setRole(employerRole);
+        // JobPortalUser updatedUser = userRepository.save(user);
+        /**
+         * Why it’s unnecessary
+         * findById() returns a managed entity
+         * You modify it inside a transaction
+         * Dirty checking automatically updates it
+         */
+        return mapToUserDto(user);
     }
 
     private UserDto mapToUserDto(JobPortalUser user) {

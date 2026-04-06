@@ -14,4 +14,11 @@ public interface IUserService {
      */
     Optional<UserDto> searchUserByEmail(String email);
 
+    /**
+     * Elevate a user's role to ROLE_EMPLOYER
+     * @param userId the ID of the user to elevate
+     * @return updated UserDto
+     */
+    UserDto elevateToEmployer(Long userId);
+
 }
