@@ -32,4 +32,11 @@ public class UserController {
         UserDto updatedUser = userService.elevateToEmployer(userId);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @PatchMapping("/{userId}/company/{companyId}/admin")
+    public ResponseEntity<?> assignCompanyToEmployer(
+            @PathVariable Long userId, @PathVariable Long companyId) {
+        UserDto updatedUser = userService.assignCompanyToEmployer(userId, companyId);
+        return ResponseEntity.ok(updatedUser);
+    }
 }

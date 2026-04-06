@@ -2,6 +2,7 @@ package com.ramjee.jobportaldemo.user.service.impl;
 
 import com.ramjee.jobportaldemo.constants.ApplicationConstants;
 import com.ramjee.jobportaldemo.dto.UserDto;
+import com.ramjee.jobportaldemo.entity.Company;
 import com.ramjee.jobportaldemo.entity.JobPortalUser;
 import com.ramjee.jobportaldemo.entity.Role;
 import com.ramjee.jobportaldemo.repository.CompanyRepository;
@@ -56,6 +57,22 @@ public class UserServiceImpl implements IUserService {
          * You modify it inside a transaction
          * Dirty checking automatically updates it
          */
+        return mapToUserDto(user);
+    }
+
+    @Transactional
+    @Override
+    public UserDto assignCompanyToEmployer(Long userId, Long companyId) {
+        JobPortalUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        // Verify user is an employer
+        if (!ApplicationConstants.ROLE_EMPLOYER.equals(user.getRole().getName())) {
+            throw new RuntimeException("User must be an employer to be assigned to a company");
+        }
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company not found with ID: " + companyId));
+        user.setCompany(company);
+        // JobPortalUser updatedUser = userRepository.save(user);
         return mapToUserDto(user);
     }
 

@@ -21,4 +21,12 @@ public interface IUserService {
      */
     UserDto elevateToEmployer(Long userId);
 
+    /**
+     * Assign a company to an employer
+     * @param userId the ID of the employer
+     * @param companyId the ID of the company to assign
+     * @return updated UserDto
+     */
+    UserDto assignCompanyToEmployer(Long userId, Long companyId);
+
 }
