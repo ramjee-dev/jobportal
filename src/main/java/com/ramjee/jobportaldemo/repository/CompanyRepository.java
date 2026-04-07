@@ -2,11 +2,13 @@ package com.ramjee.jobportaldemo.repository;
 
 import com.ramjee.jobportaldemo.entity.Company;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface CompanyRepository extends JpaRepository<Company,Long> {
 
@@ -31,4 +33,6 @@ public interface CompanyRepository extends JpaRepository<Company,Long> {
             @Param("employees") Integer employees,
             @Param("website") String website
     );
+
+    List<Company> fetchCompaniesWithJobsByStatus(@Param("status") String status);
 }

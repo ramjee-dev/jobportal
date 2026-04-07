@@ -1,6 +1,7 @@
 package com.ramjee.jobportaldemo.company.service.impl;
 
 import com.ramjee.jobportaldemo.company.service.ICompanyService;
+import com.ramjee.jobportaldemo.constants.ApplicationConstants;
 import com.ramjee.jobportaldemo.dto.CompanyDto;
 import com.ramjee.jobportaldemo.dto.JobDto;
 import com.ramjee.jobportaldemo.entity.Company;
@@ -24,7 +25,7 @@ public class CompanyServiceImpl implements ICompanyService {
 
     @Override
     public List<CompanyDto> getAllCompanies() {
-        List<Company> companyList = companyRepository.findAll();
+        List<Company> companyList = companyRepository.fetchCompaniesWithJobsByStatus(ApplicationConstants.ACTIVE_STATUS);
          return companyList.stream().map(this::transformCompanyToDto).collect(Collectors.toList());
     }
 
@@ -62,7 +63,7 @@ public class CompanyServiceImpl implements ICompanyService {
     }
 
     private CompanyDto transformCompanyToDto(Company company){
-        List<JobDto> jobDtos = company.getJobList().stream().map(this::transformJobToDto).collect(Collectors.toList());
+        List<JobDto> jobDtos = company.getJobs().stream().map(this::transformJobToDto).collect(Collectors.toList());
         return new CompanyDto(company.getId(), company.getName(), company.getLogo(),
                 company.getIndustry(), company.getSize(), company.getRating(),
                 company.getLocations(), company.getFounded(), company.getDescription(),
