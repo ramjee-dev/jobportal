@@ -8,6 +8,7 @@ import com.ramjee.jobportaldemo.entity.Job;
 import com.ramjee.jobportaldemo.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,13 +36,8 @@ public class CompanyServiceImpl implements ICompanyService {
         return savedCompany.getId() != null && savedCompany.getId() > 0;
     }
 
-    private Company transformCompanyDtoToEntity(CompanyDto companyDto) {
-        Company company = new Company();
-        BeanUtils.copyProperties(companyDto, company);
-        return company;
-    }
-
     @Override
+    @Cacheable("companies")
     public List<CompanyDto> getAllCompaniesForAdmin() {
         List<Company> companyList =companyRepository.findAll();
         return companyList.stream().map(this::transformCompanyToDtoForAdmin).collect(Collectors.toList());
@@ -72,7 +68,6 @@ public class CompanyServiceImpl implements ICompanyService {
                 company.getLocations(), company.getFounded(), company.getDescription(),
                 company.getEmployees(), company.getWebsite(), company.getCreatedAt(),jobDtos);
     }
-
     private JobDto transformJobToDto(Job job) {
         return new JobDto(
                 job.getId(),
@@ -101,11 +96,16 @@ public class CompanyServiceImpl implements ICompanyService {
                 job.getStatus()
         );
     }
-
     private CompanyDto transformCompanyToDtoForAdmin(Company company) {
         return new CompanyDto(company.getId(), company.getName(), company.getLogo(),
                 company.getIndustry(), company.getSize(), company.getRating(),
                 company.getLocations(), company.getFounded(), company.getDescription(),
                 company.getEmployees(), company.getWebsite(), company.getCreatedAt(),null);
+    }
+
+    private Company transformCompanyDtoToEntity(CompanyDto companyDto) {
+        Company company = new Company();
+        BeanUtils.copyProperties(companyDto, company);
+        return company;
     }
 }
