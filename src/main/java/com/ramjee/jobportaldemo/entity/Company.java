@@ -14,6 +14,8 @@ import java.util.Set;
 @Entity
 @Table(name = "COMPANIES")
 @NamedQueries({
+        @NamedQuery(name = "Company.fetchCompaniesWithJobsByStatus", query =
+                "SELECT DISTINCT c FROM Company c JOIN FETCH c.jobs j WHERE j.status = :status"),
         @NamedQuery(name = "Company.updateCompanyDetails",
                 query =
                         """
@@ -71,6 +73,6 @@ public class Company extends BaseEntity {
     private String website;
 
     @OneToMany(mappedBy = "company",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Job> jobList = new ArrayList<>();
+    private List<Job> jobs = new ArrayList<>();
 
 }
