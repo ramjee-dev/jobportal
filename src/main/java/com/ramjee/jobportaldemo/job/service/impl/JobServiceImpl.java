@@ -77,7 +77,6 @@ public class JobServiceImpl implements IJobService {
         return ApplicationUtility.transformJobToDto(job);
     }
 
-
     private Job tranformDtoToEntity(JobDto jobDto) {
         Job job = new Job();
         BeanUtils.copyProperties(jobDto, job);

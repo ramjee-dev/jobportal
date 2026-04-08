@@ -44,6 +44,9 @@ public class JobPortalSecurityConfig {
     @Qualifier("securedPaths")
     private final List<String> securedPaths;
 
+    @Qualifier("employerPaths")
+    private final List<String> employerPaths;
+
     @Qualifier("adminPaths")
     private final List<String> adminPaths;
 
@@ -57,6 +60,7 @@ public class JobPortalSecurityConfig {
                 .authorizeHttpRequests(requests -> {
                     publicPaths.forEach(path -> requests.requestMatchers(path).permitAll());
                     adminPaths.forEach(path -> requests.requestMatchers(path).hasRole("ADMIN"));
+                    employerPaths.forEach(path -> requests.requestMatchers(path).hasRole("EMPLOYER"));
                     securedPaths.forEach(path -> requests.requestMatchers(path).authenticated());
                     requests.anyRequest().denyAll();
                 })
