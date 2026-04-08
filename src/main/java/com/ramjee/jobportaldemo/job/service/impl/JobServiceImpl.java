@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,22 @@ public class JobServiceImpl implements IJobService {
         job.setCompany(employer.getCompany());
         Job savedJob = jobRepository.save(job);
         return ApplicationUtility.transformJobToDto(savedJob);
+    }
+
+
+    @Override
+    public List<JobDto> getEmployerJobs(String employerEmail) {
+        JobPortalUser employer = userRepository.findJobPortalUserByEmail(employerEmail)
+                .orElseThrow(() -> new RuntimeException("Employer not found"));
+
+        if (employer.getCompany() == null) {
+            throw new RuntimeException("Employer does not have a company assigned");
+        }
+
+        List<Job> jobs = employer.getCompany().getJobs();
+        return jobs.stream()
+                .map(job -> ApplicationUtility.transformJobToDto(job))
+                .collect(Collectors.toList());
     }
 
     private Job tranformDtoToEntity(JobDto jobDto) {

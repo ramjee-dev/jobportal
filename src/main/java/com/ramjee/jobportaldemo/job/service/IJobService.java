@@ -2,6 +2,8 @@ package com.ramjee.jobportaldemo.job.service;
 
 import com.ramjee.jobportaldemo.dto.JobDto;
 
+import java.util.List;
+
 public interface IJobService {
 
     /**
@@ -13,4 +15,10 @@ public interface IJobService {
     JobDto createJob(JobDto jobDto, String employerEmail);
 
 
+    /**
+     * Get all jobs posted by the employer's company
+     * @param employerEmail the email of the employer
+     * @return list of jobs
+     */
+    List<JobDto> getEmployerJobs(String employerEmail);
 }

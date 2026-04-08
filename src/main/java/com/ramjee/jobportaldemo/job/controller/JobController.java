@@ -7,10 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/jobs")
@@ -25,6 +24,14 @@ public class JobController {
         JobDto createdJob = jobService.createJob(jobDto, employerEmail);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdJob);
     }
+
+    @GetMapping(path = "/employer", version = "1.0")
+    public ResponseEntity<List<JobDto>> getEmployerJobs(Authentication authentication) {
+        String employerEmail = authentication.getName();
+        List<JobDto> jobs = jobService.getEmployerJobs(employerEmail);
+        return ResponseEntity.ok(jobs);
+    }
+
 
 }
 
