@@ -1,6 +1,8 @@
 package com.ramjee.jobportaldemo.util;
 
 import com.ramjee.jobportaldemo.constants.ApplicationConstants;
+import com.ramjee.jobportaldemo.dto.JobDto;
+import com.ramjee.jobportaldemo.entity.Job;
 import com.ramjee.jobportaldemo.entity.JobPortalUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,5 +24,34 @@ public class ApplicationUtility {
             username = principal.toString(); // fallback
         }
         return username;
+    }
+
+    public static JobDto transformJobToDto(Job job) {
+        return new JobDto(
+                job.getId(),
+                job.getTitle(),
+                job.getCompany().getId(),
+                job.getCompany().getName(),
+                job.getCompany().getLogo(),
+                job.getLocation(),
+                job.getWorkType(),
+                job.getJobType(),
+                job.getCategory(),
+                job.getExperienceLevel(),
+                job.getSalaryMin(),
+                job.getSalaryMax(),
+                job.getSalaryCurrency(),
+                job.getSalaryPeriod(),
+                job.getDescription(),
+                job.getRequirements(),
+                job.getBenefits(),
+                job.getPostedDate(),
+                job.getApplicationDeadline(),
+                job.getApplicationsCount(),
+                job.getFeatured(),
+                job.getUrgent(),
+                job.getRemote(),
+                job.getStatus()
+        );
     }
 }
