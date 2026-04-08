@@ -58,6 +58,26 @@ public class JobServiceImpl implements IJobService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    @Override
+    public JobDto updateJobStatus(Long jobId, String status, String employerEmail) {
+        // Validate status
+        if (!status.equals("ACTIVE") && !status.equals("CLOSED") && !status.equals("DRAFT")) {
+            throw new RuntimeException("Invalid status. Must be ACTIVE, CLOSED, or DRAFT");
+        }
+        JobPortalUser employer = userRepository.findJobPortalUserByEmail(employerEmail)
+                .orElseThrow(() -> new RuntimeException("Employer not found"));
+
+        if (employer.getCompany() == null) {
+            throw new RuntimeException("Employer does not have a company assigned");
+        }
+        Job job = employer.getCompany().getJobs().stream().filter(j -> j.getId().equals(jobId)).findFirst()
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+        job.setStatus(status);
+        return ApplicationUtility.transformJobToDto(job);
+    }
+
+
     private Job tranformDtoToEntity(JobDto jobDto) {
         Job job = new Job();
         BeanUtils.copyProperties(jobDto, job);

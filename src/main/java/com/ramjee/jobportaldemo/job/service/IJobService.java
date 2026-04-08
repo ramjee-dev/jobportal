@@ -21,4 +21,14 @@ public interface IJobService {
      * @return list of jobs
      */
     List<JobDto> getEmployerJobs(String employerEmail);
+
+    /**
+     * Update the status of a job
+     * @param jobId the ID of the job
+     * @param status the new status (ACTIVE, CLOSED, DRAFT)
+     * @param employerEmail the email of the employer making the request
+     * @return updated JobDto
+     */
+    JobDto updateJobStatus(Long jobId, String status, String employerEmail);
+
 }
