@@ -40,6 +40,15 @@ public class PathsConfig {
         );
     }
 
+    @Bean(name = "jobseekerPaths")
+    public List<String> jobseekerPaths() {
+        return List.of(
+                "/api/users/profile/jobseeker",
+                "/api/users/profile/picture/jobseeker",
+                "/api/users/profile/resume/jobseeker"
+        );
+    }
+
     @Bean(name = "adminPaths")
     public List<String> adminPaths() {
         return List.of(
