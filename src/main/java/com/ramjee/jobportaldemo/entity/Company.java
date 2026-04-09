@@ -13,6 +13,26 @@ import java.util.Set;
 
 @Entity
 @Table(name = "COMPANIES")
+@NamedQueries({
+        @NamedQuery(name = "Company.fetchCompaniesWithJobsByStatus", query =
+                "SELECT DISTINCT c FROM Company c JOIN FETCH c.jobs j WHERE j.status = :status"),
+        @NamedQuery(name = "Company.updateCompanyDetails",
+                query =
+                        """
+                                UPDATE Company c SET
+                                                            c.name = :name,
+                                                            c.logo = :logo,
+                                                            c.industry = :industry,
+                                                            c.size = :size,
+                                                            c.rating = :rating,
+                                                            c.locations = :locations,
+                                                            c.founded = :founded,
+                                                            c.description = :description,
+                                                            c.employees = :employees,
+                                                            c.website = :website
+                                                        WHERE c.id = :id
+                        """
+        )})
 @Getter @Setter
 public class Company extends BaseEntity {
 
@@ -53,6 +73,6 @@ public class Company extends BaseEntity {
     private String website;
 
     @OneToMany(mappedBy = "company",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Job> jobList = new ArrayList<>();
+    private List<Job> jobs = new ArrayList<>();
 
 }

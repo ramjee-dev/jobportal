@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface JobPortalUserRepository extends JpaRepository<JobPortalUser, Long> {
     Optional<JobPortalUser> readUserByEmailOrMobileNumber(String email, String mobileNumber);
 
-    Optional<JobPortalUser> findUserByEmail(String email);
+    Optional<JobPortalUser> findJobPortalUserByEmail(String email);
 }

@@ -32,4 +32,36 @@ public class PathsConfig {
         );
     }
 
+    @Bean(name = "employerPaths")
+    public List<String> employerPaths() {
+        return List.of(
+                "/api/jobs/employer",
+                "/api/jobs/${jobId}/status/employer"
+        );
+    }
+
+    @Bean(name = "jobseekerPaths")
+    public List<String> jobseekerPaths() {
+        return List.of(
+                "/api/users/profile/jobseeker",
+                "/api/users/profile/picture/jobseeker",
+                "/api/users/profile/resume/jobseeker"
+        );
+    }
+
+    @Bean(name = "adminPaths")
+    public List<String> adminPaths() {
+        return List.of(
+                "/api/contacts/admin",
+                "/api/contacts/sort/admin",
+                "/api/contacts/page/admin",
+                "/api/contacts/${id}/status/admin",
+                "/api/companies/admin",
+                "/api/companies/${id}/admin",
+                "/api/users/search/admin",
+                "/api/users/${userId}/role/employer/admin",
+                "/api/users/${userId}/role/employer/admin"
+        );
+    }
+
 }
