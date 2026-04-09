@@ -1,6 +1,9 @@
 package com.ramjee.jobportaldemo.user.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ramjee.jobportaldemo.dto.ProfileDto;
 import com.ramjee.jobportaldemo.dto.UserDto;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -28,5 +31,8 @@ public interface IUserService {
      * @return updated UserDto
      */
     UserDto assignCompanyToEmployer(Long userId, Long companyId);
+
+    ProfileDto createOrUpdateProfile(String userEmail, String profileJson,
+                                     MultipartFile profilePicture, MultipartFile resume) throws JsonProcessingException;
 
 }
