@@ -58,4 +58,11 @@ public class UserController {
         return ResponseEntity.ok(savedProfile);
     }
 
+    @GetMapping(value = "/profile/jobseeker", version = "1.0")
+    public ResponseEntity<ProfileDto> getProfile(Authentication authentication) {
+        String userEmail = authentication.getName();
+        ProfileDto profileDto = userService.getProfile(userEmail);
+        return ResponseEntity.ok(profileDto);
+    }
+
 }
