@@ -37,4 +37,7 @@ public interface IUserService {
 
     ProfileDto getProfile(String userEmail);
 
+
+    ProfileDto getProfilePicture(String userEmail);
+
 }

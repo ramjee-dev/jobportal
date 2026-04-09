@@ -5,6 +5,7 @@ import com.ramjee.jobportaldemo.dto.ProfileDto;
 import com.ramjee.jobportaldemo.dto.UserDto;
 import com.ramjee.jobportaldemo.user.service.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,20 @@ public class UserController {
         String userEmail = authentication.getName();
         ProfileDto profileDto = userService.getProfile(userEmail);
         return ResponseEntity.ok(profileDto);
+    }
+
+    @GetMapping(value = "/profile/picture/jobseeker", version = "1.0")
+    public ResponseEntity<byte[]> getProfilePicture(Authentication authentication) {
+        String userEmail = authentication.getName();
+        ProfileDto profileDto = userService.getProfilePicture(userEmail);
+        byte[] picture = profileDto.profilePicture();
+        if (picture == null || picture.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(profileDto.profilePictureType()));
+        headers.setContentLength(picture.length);
+        return new ResponseEntity<>(picture, headers, HttpStatus.OK);
     }
 
 }
