@@ -40,4 +40,6 @@ public interface IUserService {
 
     ProfileDto getProfilePicture(String userEmail);
 
+    ProfileDto getResume(String userEmail);
+
 }

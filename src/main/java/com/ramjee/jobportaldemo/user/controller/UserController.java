@@ -80,4 +80,19 @@ public class UserController {
         return new ResponseEntity<>(picture, headers, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/profile/resume/jobseeker", version = "1.0")
+    public ResponseEntity<byte[]> getResume(Authentication authentication) {
+        String userEmail = authentication.getName();
+        ProfileDto profileDto = userService.getResume(userEmail);
+        byte[] resume = profileDto.resume();
+        if (resume == null || resume.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(profileDto.resumeType()));
+        headers.setContentLength(resume.length);
+        headers.setContentDispositionFormData("attachment", profileDto.resumeName());
+        return new ResponseEntity<>(resume, headers, HttpStatus.OK);
+    }
+
 }
