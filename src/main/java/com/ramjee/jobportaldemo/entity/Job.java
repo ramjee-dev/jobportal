@@ -11,6 +11,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -121,6 +123,9 @@ public class Job extends BaseEntity {
     @JoinColumn(name = "company_id",nullable = false)
     private Company company;
 
+    @ManyToMany(mappedBy = "savedJobs")
+    private Set<JobPortalUser> savedByUsers = new LinkedHashSet<>();
 
-
+    @OneToMany(mappedBy = "job")
+    private Set<JobApplication> jobApplications = new LinkedHashSet<>();
 }
