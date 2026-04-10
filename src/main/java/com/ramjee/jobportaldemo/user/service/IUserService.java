@@ -46,4 +46,6 @@ public interface IUserService {
 
     JobApplicationDto applyForJob(String userEmail, ApplyJobRequestDto request);
 
+    void withdrawApplication(String userEmail, Long jobId);
+
 }

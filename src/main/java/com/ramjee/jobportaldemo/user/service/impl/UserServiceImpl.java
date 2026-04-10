@@ -157,6 +157,27 @@ public class UserServiceImpl implements IUserService {
         // jobRepository.save(job); - Optional
         return mapToJobApplicationDto(saved);
     }
+
+    @Transactional
+    @Override
+    public void withdrawApplication(String userEmail, Long jobId) {
+        // Validate if user exists
+        JobPortalUser user = userRepository.findJobPortalUserByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
+        if (!jobApplicationRepository.existsByUserIdAndJobId(user.getId(), jobId)) {
+            throw new RuntimeException("You have not applied for this job");
+        }
+        jobApplicationRepository.deleteByUserIdAndJobId(user.getId(), jobId);
+        // Get the job to update the count
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found with ID: " + jobId));
+
+        // Decrement applications count (ensure it doesn't go below 0)
+        if (job.getApplicationsCount() != null && job.getApplicationsCount() > 0) {
+            job.setApplicationsCount(job.getApplicationsCount() - 1);
+            // jobRepository.save(job); - Optional
+        }
+    }
     private Profile mapToProfile(Profile profile, ProfileDto profileDto,
                                  MultipartFile profilePicture, MultipartFile resume) {
         // Update text fields

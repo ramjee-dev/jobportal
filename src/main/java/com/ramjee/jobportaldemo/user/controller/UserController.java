@@ -106,4 +106,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(application);
     }
 
+    @DeleteMapping(value = "/job-applications/{jobId}/jobseeker", version = "1.0")
+    public ResponseEntity<String> withdrawApplication(@PathVariable Long jobId,
+                                                      Authentication authentication) {
+        String userEmail = authentication.getName();
+        userService.withdrawApplication(userEmail, jobId);
+        return ResponseEntity.status(HttpStatus.OK).body("Application withdrawn successfully");
+    }
+
+
 }
