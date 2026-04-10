@@ -45,7 +45,9 @@ public class PathsConfig {
         return List.of(
                 "/api/users/profile/jobseeker",
                 "/api/users/profile/picture/jobseeker",
-                "/api/users/profile/resume/jobseeker"
+                "/api/users/profile/resume/jobseeker",
+                "/api/users/job-applications/jobseeker",
+                "/api/users/job-applications/${jobId}/jobseeker"
         );
     }
 
