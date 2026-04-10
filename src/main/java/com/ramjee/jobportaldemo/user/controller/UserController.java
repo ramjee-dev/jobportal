@@ -1,9 +1,12 @@
 package com.ramjee.jobportaldemo.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ramjee.jobportaldemo.dto.ApplyJobRequestDto;
+import com.ramjee.jobportaldemo.dto.JobApplicationDto;
 import com.ramjee.jobportaldemo.dto.ProfileDto;
 import com.ramjee.jobportaldemo.dto.UserDto;
 import com.ramjee.jobportaldemo.user.service.IUserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -93,6 +96,14 @@ public class UserController {
         headers.setContentLength(resume.length);
         headers.setContentDispositionFormData("attachment", profileDto.resumeName());
         return new ResponseEntity<>(resume, headers, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/job-applications/jobseeker", version = "1.0")
+    public ResponseEntity<JobApplicationDto> applyForJob(
+            @RequestBody @Valid ApplyJobRequestDto applyJobRequestDto, Authentication authentication) {
+        String userEmail = authentication.getName();
+        JobApplicationDto application = userService.applyForJob(userEmail, applyJobRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(application);
     }
 
 }

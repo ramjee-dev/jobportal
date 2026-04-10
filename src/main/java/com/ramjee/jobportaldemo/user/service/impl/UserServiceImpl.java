@@ -3,17 +3,14 @@ package com.ramjee.jobportaldemo.user.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ramjee.jobportaldemo.constants.ApplicationConstants;
+import com.ramjee.jobportaldemo.dto.ApplyJobRequestDto;
+import com.ramjee.jobportaldemo.dto.JobApplicationDto;
 import com.ramjee.jobportaldemo.dto.ProfileDto;
 import com.ramjee.jobportaldemo.dto.UserDto;
-import com.ramjee.jobportaldemo.entity.Company;
-import com.ramjee.jobportaldemo.entity.JobPortalUser;
-import com.ramjee.jobportaldemo.entity.Profile;
-import com.ramjee.jobportaldemo.entity.Role;
-import com.ramjee.jobportaldemo.repository.CompanyRepository;
-import com.ramjee.jobportaldemo.repository.JobPortalUserRepository;
-import com.ramjee.jobportaldemo.repository.ProfileRepository;
-import com.ramjee.jobportaldemo.repository.RoleRepository;
+import com.ramjee.jobportaldemo.entity.*;
+import com.ramjee.jobportaldemo.repository.*;
 import com.ramjee.jobportaldemo.user.service.IUserService;
+import com.ramjee.jobportaldemo.util.ApplicationUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -21,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -32,6 +30,8 @@ public class UserServiceImpl implements IUserService {
     private final RoleRepository roleRepository;
     private final CompanyRepository companyRepository;
     private final ProfileRepository profileRepository;
+    private final JobRepository jobRepository;
+    private final JobApplicationRepository jobApplicationRepository;
 
     @Override
     public Optional<UserDto> searchUserByEmail(String email) {
@@ -131,6 +131,32 @@ public class UserServiceImpl implements IUserService {
         }
         return mapToProfileDto(user.getProfile(), true);
     }
+
+    @Override
+    public JobApplicationDto applyForJob(String userEmail, ApplyJobRequestDto applyJobRequestDto) {
+        // Validate if user exists
+        JobPortalUser user = userRepository.findJobPortalUserByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
+        Long jobId = applyJobRequestDto.jobId();
+        if (jobApplicationRepository.existsByUserIdAndJobId(user.getId(), jobId)) {
+            throw new RuntimeException("You have already applied for this job");
+        }
+        // Validate job exists
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found with ID: " + jobId));
+        // Create job application
+        JobApplication application = new JobApplication();
+        application.setUser(user);
+        application.setJob(job);
+        application.setAppliedAt(Instant.now());
+        application.setStatus(ApplicationConstants.PENDING);
+        application.setCoverLetter(applyJobRequestDto.coverLetter());
+        JobApplication saved = jobApplicationRepository.save(application);
+        // Increment applications count
+        job.setApplicationsCount(job.getApplicationsCount() != null ? job.getApplicationsCount() + 1 : 1);
+        // jobRepository.save(job); - Optional
+        return mapToJobApplicationDto(saved);
+    }
     private Profile mapToProfile(Profile profile, ProfileDto profileDto,
                                  MultipartFile profilePicture, MultipartFile resume) {
         // Update text fields
@@ -161,6 +187,45 @@ public class UserServiceImpl implements IUserService {
         }
         return profile;
     }
+
+    private JobApplicationDto mapToJobApplicationDto(JobApplication application) {
+        // Map profile if exists
+        ProfileDto profileDto = null;
+        Profile profile = application.getUser().getProfile();
+        if (profile != null) {
+            profileDto = new ProfileDto(
+                    profile.getId(),
+                    profile.getUser().getId(),
+                    profile.getJobTitle(),
+                    profile.getLocation(),
+                    profile.getExperienceLevel(),
+                    profile.getProfessionalBio(),
+                    profile.getPortfolioWebsite(),
+                    profile.getProfilePicture(),
+                    profile.getProfilePictureName(),
+                    profile.getProfilePictureType(),
+                    profile.getResume(),
+                    profile.getResumeName(),
+                    profile.getResumeType(),
+                    profile.getCreatedAt(),
+                    profile.getUpdatedAt()
+            );
+        }
+        return new JobApplicationDto(
+                application.getId(),
+                application.getUser().getId(),
+                application.getUser().getName(),
+                application.getUser().getEmail(),
+                application.getUser().getMobileNumber(),
+                profileDto,
+                ApplicationUtility.transformJobToDto(application.getJob()),
+                application.getAppliedAt(),
+                application.getStatus(),
+                application.getCoverLetter(),
+                application.getNotes()
+        );
+    }
+
 
     private ProfileDto mapToProfileDto(Profile profile, boolean includeBinaryData) {
         ProfileDto dto;
