@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -112,6 +113,13 @@ public class UserController {
         String userEmail = authentication.getName();
         userService.withdrawApplication(userEmail, jobId);
         return ResponseEntity.status(HttpStatus.OK).body("Application withdrawn successfully");
+    }
+
+    @GetMapping(value = "/job-applications/jobseeker", version = "1.0")
+    public ResponseEntity<List<JobApplicationDto>> getJobSeekerApplications(Authentication authentication) {
+        String userEmail = authentication.getName();
+        List<JobApplicationDto> applications = userService.getJobSeekerApplications(userEmail);
+        return ResponseEntity.ok(applications);
     }
 
 

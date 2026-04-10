@@ -19,7 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -177,6 +179,15 @@ public class UserServiceImpl implements IUserService {
             job.setApplicationsCount(job.getApplicationsCount() - 1);
             // jobRepository.save(job); - Optional
         }
+    }
+
+    @Override
+    public List<JobApplicationDto> getJobSeekerApplications(String userEmail) {
+        // Validate if user exists
+        JobPortalUser user = userRepository.findJobPortalUserByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
+        return user.getJobApplications().stream().map(this::mapToJobApplicationDto)
+                .collect(Collectors.toList());
     }
     private Profile mapToProfile(Profile profile, ProfileDto profileDto,
                                  MultipartFile profilePicture, MultipartFile resume) {

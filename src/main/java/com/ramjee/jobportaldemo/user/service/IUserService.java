@@ -7,6 +7,7 @@ import com.ramjee.jobportaldemo.dto.ProfileDto;
 import com.ramjee.jobportaldemo.dto.UserDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IUserService {
@@ -47,5 +48,7 @@ public interface IUserService {
     JobApplicationDto applyForJob(String userEmail, ApplyJobRequestDto request);
 
     void withdrawApplication(String userEmail, Long jobId);
+
+    List<JobApplicationDto> getJobSeekerApplications(String userEmail);
 
 }
